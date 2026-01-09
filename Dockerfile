@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 # Update base system and install sudo + minimal tools
-RUN apt update && apt install -y sudo bash-completion less vim curl git
+RUN apt update && apt install -y sudo bash-completion less vim curl git nano
 
 # Create a non-root user (like a VPS user)
 RUN useradd -m -s /bin/bash vpsuser \
