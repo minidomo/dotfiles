@@ -1,0 +1,5 @@
+services:
+  vps:
+    build: .
+    stdin_open: true
+    tty: true
