@@ -148,6 +148,17 @@ ins_minikube() {
         sudo install minikube-linux-${__arch} /usr/local/bin/minikube && rm minikube-linux-${__arch}
     fi
 }
+ins_kubectl() {
+    if ! exists kubectl; then
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${__arch}/kubectl"
+        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    fi
+}
+ins_helm() {
+    if ! exists helm; then
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
+    fi
+}
 
 _echo "Adjusting path if necessary\n"
 grep -q ".local/bin" $HOME/.bashrc || {
@@ -160,33 +171,35 @@ cp "${__dirname}/.inputrc" $HOME/
 grep -q "${__dirname}/motd.sh" $HOME/.profile || echo "${__dirname}/motd.sh" >> $HOME/.profile
 
 _echo "Installing packages\n"
-# (sudo service packagekit restart)
+(sudo service packagekit restart)
 
-# sudo apt update
-# sudo apt upgrade -y
-# sudo apt install -y build-essential
-# sudo apt update
-# (sudo snap refresh)
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y build-essential
+sudo apt update
+(sudo snap refresh)
 
-# ins_eget
-# ins_ncdu
-# ins_java
-# ins_rust
-# ins_docker
-# ins_bottom
-# ins_micro
-# ins_lazydocker
-# ins_nvm
-# ins_just
-# ins_gitsnip
+ins_eget
+ins_ncdu
+ins_java
+ins_rust
+ins_docker
+ins_bottom
+ins_micro
+ins_lazydocker
+ins_nvm
+ins_just
+ins_gitsnip
 ins_minikube
-# ins_prmt
+ins_kubectl
+ins_helm
+ins_prmt
 
 # ensure prmt line is last in .bashrc if it exists
 grep -q "prmt" $HOME/.bashrc && sed -i '/prmt/d' $HOME/.bashrc && echo "${prmt_prompt}" >> $HOME/.bashrc
 
-# sudo apt update
-# sudo apt upgrade -y
+sudo apt update
+sudo apt upgrade -y
 
 _echo "Finished installing packages\n"
 
