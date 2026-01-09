@@ -125,6 +125,13 @@ ins_nvm() {
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
     fi
 }
+ins_node() {
+    if ! exists node; then
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+        nvm install --lts
+    fi
+}
 ins_just() {
     if ! exists just; then
         eget casey/just --to=$HOME/.local/bin
@@ -188,6 +195,7 @@ ins_bottom
 ins_micro
 ins_lazydocker
 ins_nvm
+ins_node
 ins_just
 ins_gitsnip
 ins_minikube
