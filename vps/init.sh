@@ -103,13 +103,7 @@ ins_micro() {
         eget zyedidia/micro --to=$HOME/.local/bin
         grep -q "EDITOR=micro" $HOME/.bashrc || echo 'export EDITOR=micro' >> $HOME/.bashrc
         mkdir -p $HOME/.config/micro
-        tee $HOME/.config/micro/settings.json <<EOF
-{
-    "colorscheme": "gruvbox",
-    "ftoptions": false,
-    "tabstospaces": true
-}
-EOF
+        cp ${__dirname}/../.config/micro/settings.json $HOME/.config/micro
     fi
 }
 ins_lazydocker() {
@@ -166,6 +160,11 @@ ins_helm() {
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash
     fi
 }
+ins_dust() {
+    if ! exists dust; then
+        eget bootandy/dust --to=$HOME/.local/bin
+    fi
+}
 
 _echo "Adjusting path if necessary\n"
 grep -q ".local/bin" $HOME/.bashrc || {
@@ -174,7 +173,7 @@ grep -q ".local/bin" $HOME/.bashrc || {
 }
 
 _echo "Copy/inserting own files\n"
-cp "${__dirname}/.inputrc" $HOME/
+cp "${__dirname}/../.inputrc" $HOME/
 grep -q "${__dirname}/motd.sh" $HOME/.profile || echo "${__dirname}/motd.sh" >> $HOME/.profile
 
 _echo "Installing packages\n"
@@ -186,22 +185,23 @@ sudo apt install -y build-essential
 sudo apt update
 (sudo snap refresh)
 
-ins_eget
-ins_ncdu
-ins_java
-ins_rust
-ins_docker
-ins_bottom
-ins_micro
-ins_lazydocker
-ins_nvm
-ins_node
-ins_just
-ins_gitsnip
-ins_minikube
-ins_kubectl
-ins_helm
-ins_prmt
+case " $@ " in *" eget "*) ins_eget;; esac
+case " $@ " in *" ncdu "*) ins_ncdu;; esac
+case " $@ " in *" java "*) ins_java;; esac
+case " $@ " in *" rust "*) ins_rust;; esac
+case " $@ " in *" docker "*) ins_docker;; esac
+case " $@ " in *" bottom "*) ins_bottom;; esac
+case " $@ " in *" micro "*) ins_micro;; esac
+case " $@ " in *" lazydocker "*) ins_lazydocker;; esac
+case " $@ " in *" nvm "*) ins_nvm;; esac
+case " $@ " in *" node "*) ins_node;; esac
+case " $@ " in *" just "*) ins_just;; esac
+case " $@ " in *" gitsnip "*) ins_gitsnip;; esac
+case " $@ " in *" minikube "*) ins_minikube;; esac
+case " $@ " in *" kubectl "*) ins_kubectl;; esac
+case " $@ " in *" helm "*) ins_helm;; esac
+case " $@ " in *" dust "*) ins_dust;; esac
+case " $@ " in *" prmt "*) ins_prmt;; esac
 
 # ensure prmt line is last in .bashrc if it exists
 grep -q "prmt" $HOME/.bashrc && sed -i '/prmt/d' $HOME/.bashrc && echo "${prmt_prompt}" >> $HOME/.bashrc
