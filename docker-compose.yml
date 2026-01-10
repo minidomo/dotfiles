@@ -2,6 +2,6 @@ services:
   vps:
     build: .
     volumes:
-      - ./vps:/home/vpsuser/dotfiles
+      - .:/home/vpsuser/dotfiles
     stdin_open: true
     tty: true

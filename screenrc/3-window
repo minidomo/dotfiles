@@ -1,0 +1,10 @@
+layout new main
+split
+split -v
+screen -t w0
+focus
+screen -t w1
+focus
+screen -t w2
+focus
+layout save

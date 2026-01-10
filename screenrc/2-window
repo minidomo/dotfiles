@@ -1,0 +1,7 @@
+layout new main
+split
+screen -t w0
+focus
+screen -t w1
+focus
+layout save
