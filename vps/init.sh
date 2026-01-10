@@ -181,7 +181,7 @@ _echo "Installing packages\n"
 
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y build-essential
+case " $@ " in *" dev "*) sudo apt install -y build-essential;; esac
 sudo apt update
 (sudo snap refresh)
 
