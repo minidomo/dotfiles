@@ -165,6 +165,14 @@ ins_dust() {
         eget bootandy/dust --to=$HOME/.local/bin
     fi
 }
+ins_fresh() {
+    if ! exists fresh; then
+        curl https://raw.githubusercontent.com/sinelaw/fresh/refs/heads/master/scripts/install.sh | sh
+        grep -q "EDITOR=fresh" $HOME/.bashrc || echo 'export EDITOR=fresh' >> $HOME/.bashrc
+        mkdir -p $HOME/.config/fresh
+        cp ${__dirname}/../.config/fresh/config.json $HOME/.config/fresh
+    fi
+}
 
 _echo "Adjusting path if necessary\n"
 grep -q ".local/bin" $HOME/.bashrc || {
@@ -201,6 +209,7 @@ case " $@ " in *" minikube "*) ins_minikube;; esac
 case " $@ " in *" kubectl "*) ins_kubectl;; esac
 case " $@ " in *" helm "*) ins_helm;; esac
 case " $@ " in *" dust "*) ins_dust;; esac
+case " $@ " in *" fresh "*) ins_fresh;; esac
 case " $@ " in *" prmt "*) ins_prmt;; esac
 
 # ensure prmt line is last in .bashrc if it exists

@@ -1,0 +1,24 @@
+{
+    "theme": "dark",
+    "active_keybinding_map": "vscode",
+    "keybindings": [
+        {
+            "key": "Right",
+            "modifiers": [
+                "alt"
+            ],
+            "action": "move_line_end",
+            "args": {},
+            "when": "normal"
+        },
+        {
+            "key": "Left",
+            "modifiers": [
+                "alt"
+            ],
+            "action": "move_line_start",
+            "args": {},
+            "when": "normal"
+        }
+    ]
+}
