@@ -255,5 +255,4 @@ Invoke-Expression -Command $(kubectl completion powershell | Out-String)
 Invoke-Expression -Command $(docker completion powershell | Out-String)
 Import-Module posh-git
 
-# oh-my-posh init pwsh --config 'C:/.config/oh-my-posh/main.omp.json' | Invoke-Expression
 Invoke-Expression (&starship init powershell)
