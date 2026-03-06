@@ -246,6 +246,19 @@ function Check-Port {
     }
 }
 
+function Invoke-Remote-Script {
+    param(
+        [String]$Url
+    )
+
+    $fix = $Url.Trim()
+    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString($fix))
+}
+
+function Invoke-Clean-Path {
+    Invoke-Remote-Script "https://raw.githubusercontent.com/jonasgeiler/pathix/0dfc68071f9494c6a7e8cf13eace712902eb743b/pathix.ps1"
+}
+
 Invoke-Expression -Command $(gh completion -s powershell | Out-String)
 Invoke-Expression -Command $(just --completions powershell | Out-String)
 Invoke-Expression -Command $(rustup completions powershell | Out-String)
@@ -253,6 +266,10 @@ Invoke-Expression -Command $(task --completion powershell | Out-String)
 Invoke-Expression -Command $(minikube completion powershell | Out-String)
 Invoke-Expression -Command $(kubectl completion powershell | Out-String)
 Invoke-Expression -Command $(docker completion powershell | Out-String)
+
+Invoke-Expression -Command $(fnm completions --shell powershell | Out-String)
+fnm env --use-on-cd | Out-String | Invoke-Expression
+
 Import-Module posh-git
 
 Invoke-Expression (&starship init powershell)
