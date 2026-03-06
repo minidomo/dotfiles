@@ -223,7 +223,7 @@ function Invoke-Starship-PreCommand {
     $host.ui.Write($prompt)
 }
 
-function Check-Port {
+function Test-Port {
     param(
         [int]$Port
     )
@@ -246,7 +246,7 @@ function Check-Port {
     }
 }
 
-function Invoke-Remote-Script {
+function Invoke-RemoteScript {
     param(
         [String]$Url
     )
@@ -255,7 +255,7 @@ function Invoke-Remote-Script {
     Invoke-Expression ((New-Object System.Net.WebClient).DownloadString($fix))
 }
 
-function Invoke-Clean-Path {
+function Optimize-Path {
     Invoke-Remote-Script "https://raw.githubusercontent.com/jonasgeiler/pathix/0dfc68071f9494c6a7e8cf13eace712902eb743b/pathix.ps1"
 }
 
