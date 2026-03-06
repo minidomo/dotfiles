@@ -256,7 +256,7 @@ function Invoke-RemoteScript {
 }
 
 function Optimize-Path {
-    Invoke-Remote-Script "https://raw.githubusercontent.com/jonasgeiler/pathix/0dfc68071f9494c6a7e8cf13eace712902eb743b/pathix.ps1"
+    Invoke-RemoteScript "https://raw.githubusercontent.com/jonasgeiler/pathix/0dfc68071f9494c6a7e8cf13eace712902eb743b/pathix.ps1"
 }
 
 Invoke-Expression -Command $(gh completion -s powershell | Out-String)
