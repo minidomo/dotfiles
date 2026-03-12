@@ -266,6 +266,7 @@ Invoke-Expression -Command $(task --completion powershell | Out-String)
 Invoke-Expression -Command $(minikube completion powershell | Out-String)
 Invoke-Expression -Command $(kubectl completion powershell | Out-String)
 Invoke-Expression -Command $(docker completion powershell | Out-String)
+Invoke-Expression -Command $(pnpm completion pwsh | Out-String)
 
 Invoke-Expression -Command $(fnm completions --shell powershell | Out-String)
 fnm env --use-on-cd | Out-String | Invoke-Expression
