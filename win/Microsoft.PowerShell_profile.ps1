@@ -251,26 +251,25 @@ function Invoke-RemoteScript {
         [String]$Url
     )
 
-    $fix = $Url.Trim()
-    Invoke-Expression ((New-Object System.Net.WebClient).DownloadString($fix))
+    Invoke-RestMethod -Uri $Url.Trim() | Invoke-Expression
 }
 
 function Optimize-Path {
     Invoke-RemoteScript "https://raw.githubusercontent.com/jonasgeiler/pathix/0dfc68071f9494c6a7e8cf13eace712902eb743b/pathix.ps1"
 }
 
-Invoke-Expression -Command $(gh completion -s powershell | Out-String)
-Invoke-Expression -Command $(just --completions powershell | Out-String)
-Invoke-Expression -Command $(rustup completions powershell | Out-String)
-Invoke-Expression -Command $(task --completion powershell | Out-String)
-Invoke-Expression -Command $(minikube completion powershell | Out-String)
-Invoke-Expression -Command $(kubectl completion powershell | Out-String)
-Invoke-Expression -Command $(docker completion powershell | Out-String)
+gh completion -s powershell | Out-String | Invoke-Expression
+just --completions powershell | Out-String | Invoke-Expression
+rustup completions powershell | Out-String | Invoke-Expression
+task --completion powershell | Out-String | Invoke-Expression
+minikube completion powershell | Out-String | Invoke-Expression
+kubectl completion powershell | Out-String | Invoke-Expression
+docker completion powershell | Out-String | Invoke-Expression
 
-Invoke-Expression -Command $(fnm completions --shell powershell | Out-String)
+fnm completions --shell powershell | Out-String | Invoke-Expression
 fnm env --use-on-cd | Out-String | Invoke-Expression
 
-Invoke-Expression -Command $(pnpm completion pwsh | Out-String)
+pnpm completion pwsh | Out-String | Invoke-Expression
 
 Import-Module posh-git
 
