@@ -251,7 +251,12 @@ function Invoke-RemoteScript {
         [String]$Url
     )
 
-    Invoke-RestMethod -Uri $Url.Trim() | Invoke-Expression
+    $content = (Invoke-WebRequest $Url.Trim()).Content
+
+    # some scripts might have UTF-8 BOM at the start
+    $content = $content.TrimStart([char]0xFEFF)
+    
+    Invoke-Expression $content
 }
 
 function Optimize-Path {
