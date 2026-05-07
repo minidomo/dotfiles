@@ -111,6 +111,33 @@ function Get-WorkPromptGitCommand {
     return $script:WorkPromptGitCommand
 }
 
+function Get-WorkPromptGitPathDisplay {
+    param(
+        [string]$Path,
+        [string]$RepositoryRoot
+    )
+
+    $fullPath = [System.IO.Path]::GetFullPath($Path)
+    $fullRepositoryRoot = [System.IO.Path]::GetFullPath($RepositoryRoot)
+    $segments = [System.Collections.Generic.List[string]]::new()
+
+    [void]$segments.Add((Split-Path -Leaf $fullRepositoryRoot))
+
+    if ($fullPath.Length -gt $fullRepositoryRoot.Length) {
+        $relativePath = $fullPath.Substring($fullRepositoryRoot.Length).TrimStart('\', '/')
+
+        foreach ($segment in (Get-WorkPromptSegments -Path $relativePath)) {
+            [void]$segments.Add($segment)
+        }
+    }
+
+    if ($segments.Count -le 3) {
+        return ($segments -join '/')
+    }
+
+    return Get-WorkPromptLastSegments -Segments $segments.ToArray() -Count 3
+}
+
 function Get-WorkPromptRepositoryRoot {
     param(
         [string]$Path
@@ -170,11 +197,12 @@ function Get-WorkPromptGitInfo {
     }
 
     $dirtyMarker = if ($isDirty) { '*' } else { '' }
+    $displayPath = Get-WorkPromptGitPathDisplay -Path $Path -RepositoryRoot $repositoryRoot
 
     return [pscustomobject]@{
-        RepositoryName = Split-Path -Leaf $repositoryRoot
-        Branch         = $branch
-        DirtyMarker    = $dirtyMarker
+        DisplayPath = $displayPath
+        Branch      = $branch
+        DirtyMarker = $dirtyMarker
     }
 }
 
@@ -192,7 +220,7 @@ function prompt {
 
         if ($gitInfo) {
             $display = @(
-                "$($PSStyle.Foreground.Blue)$($gitInfo.RepositoryName)$($PSStyle.Reset)"
+                "$($PSStyle.Foreground.Blue)$($gitInfo.DisplayPath)$($PSStyle.Reset)"
                 "$($PSStyle.Foreground.BrightBlack) $($gitInfo.Branch)$($PSStyle.Reset)"
                 if ($gitInfo.DirtyMarker) {
                     "$($PSStyle.Foreground.Yellow)$($gitInfo.DirtyMarker)$($PSStyle.Reset)"
