@@ -26,6 +26,7 @@ function Test-WorkPromptIsSameOrChildPath {
     }
 
     $nextChar = $Path[$BasePath.Length]
+    
     return $nextChar -eq '\' -or $nextChar -eq '/'
 }
 
@@ -35,6 +36,7 @@ function Get-WorkPromptSegments {
     )
 
     $segments = [System.Collections.Generic.List[string]]::new()
+
     foreach ($segment in ($Path -split '[\\/]')) {
         if ($segment) {
             [void]$segments.Add($segment)
@@ -98,6 +100,7 @@ function Get-WorkPromptPathDisplay {
 function Get-WorkPromptGitCommand {
     if (-not $script:WorkPromptGitChecked) {
         $command = Get-Command git -CommandType Application -ErrorAction Ignore | Select-Object -First 1
+
         if ($command) {
             $script:WorkPromptGitCommand = $command.Source
         }
@@ -114,6 +117,7 @@ function Get-WorkPromptRepositoryRoot {
     )
 
     $directory = [System.IO.DirectoryInfo]::new([System.IO.Path]::GetFullPath($Path))
+
     while ($directory) {
         if (Test-Path -LiteralPath (Join-Path $directory.FullName '.git')) {
             return $directory.FullName
@@ -125,7 +129,7 @@ function Get-WorkPromptRepositoryRoot {
     return $null
 }
 
-function Get-WorkPromptGitDisplay {
+function Get-WorkPromptGitInfo {
     param(
         [string]$Path
     )
@@ -151,6 +155,7 @@ function Get-WorkPromptGitDisplay {
     foreach ($line in $statusLines) {
         if ($line.StartsWith('# branch.head ')) {
             $branch = $line.Substring(14)
+
             if ($branch -eq '(detached)') {
                 $branch = 'HEAD'
             }
@@ -165,11 +170,17 @@ function Get-WorkPromptGitDisplay {
     }
 
     $dirtyMarker = if ($isDirty) { '*' } else { '' }
-    $repositoryName = Split-Path -Leaf $repositoryRoot
-    return "$repositoryName $branch$dirtyMarker"
+
+    return [pscustomobject]@{
+        RepositoryName = Split-Path -Leaf $repositoryRoot
+        Branch         = $branch
+        DirtyMarker    = $dirtyMarker
+    }
 }
 
 function prompt {
+    $lastCommandSucceeded = $?
+    
     # https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory
     $loc = $executionContext.SessionState.Path.CurrentLocation
     $out = ""
@@ -177,15 +188,32 @@ function prompt {
     if ($loc.Provider.Name -eq 'FileSystem') {
         $out += "$([char]27)]9;9;`"$($loc.ProviderPath)`"$([char]27)\"
 
-        $display = Get-WorkPromptGitDisplay -Path $loc.ProviderPath
-        if (-not $display) {
-            $display = Get-WorkPromptPathDisplay -Path $loc.ProviderPath
+        $gitInfo = Get-WorkPromptGitInfo -Path $loc.ProviderPath
+
+        if ($gitInfo) {
+            $display = @(
+                "$($PSStyle.Foreground.Blue)$($gitInfo.RepositoryName)$($PSStyle.Reset)"
+                "$($PSStyle.Foreground.BrightBlack) $($gitInfo.Branch)$($PSStyle.Reset)"
+                if ($gitInfo.DirtyMarker) {
+                    "$($PSStyle.Foreground.Yellow)$($gitInfo.DirtyMarker)$($PSStyle.Reset)"
+                }
+            ) -join ''
+        }
+        else {
+            $display = "$($PSStyle.Foreground.Blue)$(Get-WorkPromptPathDisplay -Path $loc.ProviderPath)$($PSStyle.Reset)"
         }
     }
     else {
-        $display = $loc.Path
+        $display = "$($PSStyle.Foreground.Blue)$($loc.Path)$($PSStyle.Reset)"
     }
 
-    $out += "`r`n$display`r`n❯ "
+    $promptColor = if ($lastCommandSucceeded) {
+        $PSStyle.Foreground.Magenta
+    }
+    else {
+        $PSStyle.Foreground.Red
+    }
+
+    $out += "`r`n$display`r`n$promptColor❯$($PSStyle.Reset) "
     return $out
 }
