@@ -1,3 +1,5 @@
+#region Native prompt
+
 $script:WorkPromptGitChecked = $false
 $script:WorkPromptGitCommand = $null
 $script:WorkPromptHomePath = if ($HOME) {
@@ -156,6 +158,40 @@ function Get-WorkPromptRepositoryRoot {
     return $null
 }
 
+function Test-WorkPromptGitHasUntrackedChanges {
+    param(
+        [string]$GitCommand,
+        [string]$RepositoryRoot
+    )
+
+    $firstUntrackedPath = & $GitCommand -C $RepositoryRoot ls-files --others --exclude-standard --directory --no-empty-directory 2>$null |
+    Select-Object -First 1
+
+    if ($LASTEXITCODE -ne 0) {
+        return $null
+    }
+
+    return -not [string]::IsNullOrEmpty([string]$firstUntrackedPath)
+}
+
+function Get-WorkPromptGitBranch {
+    param(
+        [string]$GitCommand,
+        [string]$RepositoryRoot
+    )
+
+    $branch = & $GitCommand -C $RepositoryRoot symbolic-ref --quiet --short HEAD 2>$null
+    if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrEmpty([string]$branch)) {
+        return [string]$branch
+    }
+
+    if ($LASTEXITCODE -eq 1) {
+        return 'HEAD'
+    }
+
+    return $null
+}
+
 function Get-WorkPromptGitInfo {
     param(
         [string]$Path
@@ -171,29 +207,32 @@ function Get-WorkPromptGitInfo {
         return $null
     }
 
-    $statusLines = & $gitCommand -C $repositoryRoot status --porcelain=v2 --branch 2>$null
+    $branch = Get-WorkPromptGitBranch -GitCommand $gitCommand -RepositoryRoot $repositoryRoot
+    if (-not $branch) {
+        return $null
+    }
+
+    $statusLines = & $gitCommand -C $repositoryRoot status --porcelain=v2 --untracked-files=no 2>$null
     if ($LASTEXITCODE -ne 0) {
         return $null
     }
 
-    $branch = 'HEAD'
     $isDirty = $false
 
     foreach ($line in $statusLines) {
-        if ($line.StartsWith('# branch.head ')) {
-            $branch = $line.Substring(14)
-
-            if ($branch -eq '(detached)') {
-                $branch = 'HEAD'
-            }
-
-            continue
-        }
-
-        if (-not $line.StartsWith('#')) {
+        if (-not [string]::IsNullOrEmpty([string]$line)) {
             $isDirty = $true
             break
         }
+    }
+
+    if (-not $isDirty) {
+        $hasUntrackedChanges = Test-WorkPromptGitHasUntrackedChanges -GitCommand $gitCommand -RepositoryRoot $repositoryRoot
+        if ($null -eq $hasUntrackedChanges) {
+            return $null
+        }
+
+        $isDirty = $hasUntrackedChanges
     }
 
     $dirtyMarker = if ($isDirty) { '*' } else { '' }
@@ -245,3 +284,5 @@ function prompt {
     $out += "`r`n$display`r`n$promptColor❯$($PSStyle.Reset) "
     return $out
 }
+
+#endregion Native prompt
