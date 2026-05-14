@@ -1,3 +1,5 @@
+#region Native prompt
+
 $script:WorkPromptGitChecked = $false
 $script:WorkPromptGitCommand = $null
 $script:WorkPromptHomePath = if ($HOME) {
@@ -245,3 +247,5 @@ function prompt {
     $out += "`r`n$display`r`n$promptColor❯$($PSStyle.Reset) "
     return $out
 }
+
+#endregion Native prompt
