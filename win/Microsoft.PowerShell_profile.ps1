@@ -286,12 +286,14 @@ function Set-EnvVar {
         }
 
         [System.Environment]::SetEnvironmentVariable($Name, $null, $Scope)
+        [System.Environment]::SetEnvironmentVariable($Name, $null, "Process")
 
         Write-Host "Environment variable '$Name' deleted for $Scope scope." -ForegroundColor Green
         return
     }
 
     [System.Environment]::SetEnvironmentVariable($Name, $Value, $Scope)
+    [System.Environment]::SetEnvironmentVariable($Name, $Value, "Process")
 
     Write-Host "Environment variable '$Name' set for $Scope scope." -ForegroundColor Green
 }
