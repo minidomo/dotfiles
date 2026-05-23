@@ -1,7 +1,7 @@
 Import-Module ps-readline
 Import-Module posh-git
-Import-Module Custom -Force
-# Import-Module WorkPrompt -Force
+Import-Module custom -Force
+# Import-Module work-prompt -Force
 
 # https://learn.microsoft.com/en-us/windows/terminal/tutorials/new-tab-same-directory
 function Invoke-Starship-PreCommand {
