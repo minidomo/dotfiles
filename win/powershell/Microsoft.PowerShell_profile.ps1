@@ -22,7 +22,7 @@ kubectl completion powershell | Out-String | Invoke-Expression
 docker completion powershell | Out-String | Invoke-Expression
 
 fnm completions --shell powershell | Out-String | Invoke-Expression
-fnm env --use-on-cd | Out-String | Invoke-Expression
+fnm env --use-on-cd --corepack-enabled | Out-String | Invoke-Expression
 
 pnpm completion pwsh | Out-String | Invoke-Expression
 
