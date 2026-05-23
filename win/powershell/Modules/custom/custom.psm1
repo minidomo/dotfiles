@@ -73,3 +73,8 @@ function Set-EnvVar {
 
     Write-Host "Environment variable '$Name' set for $Scope scope." -ForegroundColor Green
 }
+
+function Invoke-PnpmUpdate {
+    corepack prepare pnpm@latest --activate
+    pnpm setup
+}
