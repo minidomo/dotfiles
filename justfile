@@ -1,8 +1,6 @@
 set windows-shell := ['pwsh.exe', '-NoLogo', '-Command']
 set shell := ['bash', '-uc']
-
-_default:
-    @just --list
+set default-list
 
 vps:
     docker compose run --build --remove-orphans vps bash
