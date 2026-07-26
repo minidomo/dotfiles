@@ -1,5 +1,7 @@
-set windows-shell := ['pwsh.exe', '-NoLogo', '-Command']
-set shell := ['bash', '-uc']
+[windows]
+set shell := ['pwsh.exe', '-NoLogo', '-Command']
+set unstable
+set lists
 set default-list
 
 vps:
